@@ -1,0 +1,21 @@
+structure:
+
+input layer:
+	30 neurons holding each normalized feature value
+
+hidden layers:
+	two layers of x perceptron
+
+output:
+	2 neuron corresponding to P(M) and p(B)
+
+with a, the activation value of the neuron, l the layer, b the bias of the perceptron
+
+a(l) = sigmoid(w(l) * a(l - 1) + b(l))
+
+cost function of a sample input:
+	(output - expected) ^ 2
+
+must be done on all samples and averaged to get the cost of the network.
+
+once done, get the negative gradient of the cost function (of all the samples) to descent and minimize it.
