@@ -9,7 +9,11 @@ hidden layers:
 output:
 	2 neuron corresponding to P(M) and p(B)
 
-with a, the activation value of the neuron, l the layer, b the bias of the perceptron
+With
+	l: the layer
+	a: the activation matrix of the layer
+	b: the bias matrix of the layer
+	w: the weights matrix between the layer and the previous layer
 
 a(l) = sigmoid(w(l) * a(l - 1) + b(l))
 
@@ -17,5 +21,13 @@ cost function of a sample input:
 	(output - expected) ^ 2
 
 must be done on all samples and averaged to get the cost of the network.
-
 once done, get the negative gradient of the cost function (of all the samples) to descent and minimize it.
+
+Backpropagation:
+	Used to compute the negative gradient of the cost function I.E. the partial derivative of the cost function C by Weights and Biases matrices
+
+dataset division:
+
+60% for training
+20% for validation
+20% for test
