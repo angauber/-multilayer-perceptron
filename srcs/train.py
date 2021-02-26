@@ -6,7 +6,7 @@ from os.path import abspath
 
 
 def train(dataset_path):
-    seed = 565
+    seed = 351
     np.random.seed(seed)
 
     df = getDataFrame(abspath(dataset_path))
@@ -15,7 +15,7 @@ def train(dataset_path):
     del df
 
     net = Network([30, 10, 10, 2], seed)
-    net.fit(train_data, validation_data, 1000, 4).exportNetwork()
+    net.fit(train_data, validation_data, 200, 5).exportNetwork()
 
 def main():
     parser = argparse.ArgumentParser()
