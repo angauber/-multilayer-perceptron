@@ -15,7 +15,7 @@ def train(dataset_path):
     del df
 
     net = Network([30, 10, 10, 2], seed)
-    net.fit(train_data, validation_data, 200, 5).exportNetwork()
+    net.fit(train_data, validation_data, 400, 2).exportNetwork()
 
 def main():
     parser = argparse.ArgumentParser()

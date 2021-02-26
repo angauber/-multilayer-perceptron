@@ -32,6 +32,8 @@ class Network:
             z.append((weights @ activation[-1]) + biases)
             activation.append(sigmoid(z[-1]))
 
+        activation[-1] = self.softmax(z[-1])
+
         self.activation = np.array(activation)
         self.z = np.array(z)
 
