@@ -10,11 +10,12 @@ class Network:
 
         self.layers = layers
         """One bias per perceptron in each layer but the input."""
-        self.biases = np.array([np.random.randn(i, 1) for i in layers[1:]])
+        self.biases = np.array([np.random.randn(i, 1) for i in layers[1:]], dtype=object)
         """n matrices of m weights between each layer with:
                n the number of perceptron in the current layer
                m the number of perceptron in the previous layer"""
-        self.weights = np.array([np.random.randn(i, j) for j, i in zip(layers[:-1], layers[1:])])
+        self.weights = np.array([np.random.randn(i, j) for j, i in zip(layers[:-1], layers[1:])], dtype=object)
+
         """activation matrix"""
         self.activation = np.array([])
         """Activation matrix without the sigmoid"""
@@ -36,8 +37,8 @@ class Network:
 
         activation[-1] = self.softmax(z[-1])
 
-        self.activation = np.array(activation)
-        self.z = np.array(z)
+        self.activation = np.array(activation, dtype=object)
+        self.z = np.array(z, dtype=object)
 
         return self.activation[-1]
 
@@ -53,9 +54,13 @@ class Network:
 
     """Binary cross entropy"""
     def crossEntropy(self, dataset: list) -> float:
-        res = np.array([y @ np.log(self.feedForward(x)) + ((1 - y) @ np.log(1 - self.feedForward(x))) for x, y in dataset])
+        n = len(dataset)
+        dataset = np.array([[self.feedForward(x).flatten(), y] for x, y in dataset])
 
-        return (-1 / len(dataset)) * res.sum()
+        p = dataset[:,0]
+        y = dataset[:,1]
+
+        return (-1 / y.size) * np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
 
     def getCrossEntropyHistory(self) -> list:
         return self.cross_entropy
@@ -72,16 +77,16 @@ class Network:
     """Apply gradient descent"""
     def fit(self, train_data: list, validation_data: list, epoch: int, learning_rate: float):
         for e in range(epoch):
-            b_delta = np.array([np.zeros(bl.shape) for bl in self.biases])
-            w_delta = np.array([np.zeros(wl.shape) for wl in self.weights])
+            b_delta = np.array([np.zeros(bl.shape) for bl in self.biases], dtype=object)
+            w_delta = np.array([np.zeros(wl.shape) for wl in self.weights], dtype=object)
 
             for x, y in train_data:
                 b_grad, w_grad = self.backPropagate(x, y)
                 b_delta = [nb + dnb for nb, dnb in zip(b_delta, b_grad)]
                 w_delta = [nw + dnw for nw, dnw in zip(w_delta, w_grad)]
 
-            self.weights = np.array([w - (learning_rate / len(train_data)) * nw for w, nw in zip(self.weights, w_delta)])
-            self.biases = np.array([b - (learning_rate / len(train_data)) * nb for b, nb in zip(self.biases, b_delta)])
+            self.weights = np.array([w - (learning_rate / len(train_data)) * nw for w, nw in zip(self.weights, w_delta)], dtype=object)
+            self.biases = np.array([b - (learning_rate / len(train_data)) * nb for b, nb in zip(self.biases, b_delta)], dtype=object)
 
             self.cross_entropy.append(self.crossEntropy(validation_data))
 
@@ -91,8 +96,8 @@ class Network:
 
     """Returns a tuple of two matrices corresponding to the gradiant error of weights and biases"""
     def backPropagate(self, x: np.ndarray, y: np.ndarray) -> tuple:
-        b_grad = np.array([np.zeros(bl.shape) for bl in self.biases])
-        w_grad = np.array([np.zeros(wl.shape) for wl in self.weights])
+        b_grad = np.array([np.zeros(bl.shape) for bl in self.biases], dtype=object)
+        w_grad = np.array([np.zeros(wl.shape) for wl in self.weights], dtype=object)
 
         """feed forward"""
         self.feedForward(x)
@@ -122,7 +127,7 @@ class Network:
 
     """Import biases and weights"""
     def importNetwork(self):
-        net = np.load('net.npy')
+        net = np.load('net.npy', allow_pickle=True)
 
         self.biases = net[0]
         self.weights = net[1]
