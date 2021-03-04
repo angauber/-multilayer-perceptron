@@ -20,6 +20,8 @@ class Network:
         """Activation matrix without the sigmoid"""
         self.z = np.array([])
 
+        self.cross_entropy = []
+
         self.biases_count = sum(layers[1:])
         self.weights_count = sum([i * j for i, j in zip(layers[:-1], layers[1:])])
 
@@ -49,11 +51,16 @@ class Network:
 
         return self.activation[-1] - y
 
+    """Binary cross entropy"""
     def crossEntropy(self, dataset: list) -> float:
         res = np.array([y @ np.log(self.feedForward(x)) + ((1 - y) @ np.log(1 - self.feedForward(x))) for x, y in dataset])
 
         return (-1 / len(dataset)) * res.sum()
 
+    def getCrossEntropyHistory(self) -> list:
+        return self.cross_entropy
+
+    """Compute the percentage of correct predicitons in the given dataset"""
     def evaluate(self, dataset: list):
         predicted = []
 
@@ -62,6 +69,7 @@ class Network:
 
         return ((np.array(predicted) == 1).sum() / len(dataset)) * 100
 
+    """Apply gradient descent"""
     def fit(self, train_data: list, validation_data: list, epoch: int, learning_rate: float):
         for e in range(epoch):
             b_delta = np.array([np.zeros(bl.shape) for bl in self.biases])
@@ -75,7 +83,9 @@ class Network:
             self.weights = np.array([w - (learning_rate / len(train_data)) * nw for w, nw in zip(self.weights, w_delta)])
             self.biases = np.array([b - (learning_rate / len(train_data)) * nb for b, nb in zip(self.biases, b_delta)])
 
-            print('Epoch: [{}/{}] Precision: [{:.2f}%]'.format(e + 1, epoch, self.evaluate(validation_data)))
+            self.cross_entropy.append(self.crossEntropy(validation_data))
+
+            print('Epoch: [{}/{}] Precision: [{:.2f}%] Cross entropy: {:.3f}'.format(e + 1, epoch, self.evaluate(validation_data), self.cross_entropy[-1]))
 
         return self
 

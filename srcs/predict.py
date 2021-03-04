@@ -2,12 +2,11 @@ import numpy as np
 import argparse
 from network import Network
 from data import getDataFrame, divide
-from os.path import abspath
 
 def predict(dataset_path):
     seed = 565
 
-    df = getDataFrame(abspath(dataset_path))
+    df = getDataFrame(dataset_path)
 
     _, _, test_data = divide(df, seed)
 
